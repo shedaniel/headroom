@@ -39,7 +39,11 @@ services:
         aliases: [headroom-app]
 
   tailscale:
-    image: tailscale/tailscale:v1.102.5
+    # Built from ts/Dockerfile so ts/serve.json ships inside the image. A bind mount of ./ts would be
+    # empty on hosts that deploy only the compose file (Coolify). Edit serve.json, then rebuild.
+    build:
+      context: ./ts
+    image: headroom-tailscale:${HEADROOM_IMAGE_TAG:-local}
     restart: unless-stopped
     environment:
       TS_AUTHKEY: ${TS_AUTHKEY:?set TS_AUTHKEY in the deployment environment}
@@ -52,8 +56,6 @@ services:
     volumes:
       # Keeps the node identity (and its name) across restarts.
       - ts-state:/var/lib/tailscale
-      # A directory, not a single file, so Tailscale sees edits.
-      - ./ts:/config:ro
     depends_on:
       headroom:
         condition: service_healthy

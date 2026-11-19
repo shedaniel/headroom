@@ -2,11 +2,11 @@
 
 Headroom runs as two containers: the app, and a Tailscale node that serves it over HTTPS at `https://<TS_HOSTNAME>.<tailnet>.ts.net`. The app publishes no port, so only devices on your tailnet can reach it. Funnel stays off.
 
-Files: [`deploy/compose.yaml`](../../deploy/compose.yaml), [`deploy/ts/serve.json`](../../deploy/ts/serve.json), [`deploy/.env.example`](../../deploy/.env.example), [`deploy/import-local.sh`](../../deploy/import-local.sh). Requirements and storage rules: [Deployment and credential storage](../architecture/deployment.md).
+Files: [`deploy/compose.yaml`](../../deploy/compose.yaml), [`deploy/ts/Dockerfile`](../../deploy/ts/Dockerfile), [`deploy/ts/serve.json`](../../deploy/ts/serve.json), [`deploy/.env.example`](../../deploy/.env.example), [`deploy/import-local.sh`](../../deploy/import-local.sh). Requirements and storage rules: [Deployment and credential storage](../architecture/deployment.md).
 
 ## Before you start
 
-1. A Linux host with Docker Engine and Compose v2, or a Dokploy server.
+1. A Linux host with Docker Engine and Compose v2, a Dokploy server, or a Coolify server.
 2. In the Tailscale admin console, DNS page: turn on MagicDNS and HTTPS Certificates.
 3. In Settings, Keys: generate an auth key. Turn off Reusable and Ephemeral, and turn on Pre-approved if device approval is on. If your access rules use tags, tag the key, for example `tag:server`, and allow your own devices to reach that tag on port 443.
 
@@ -33,6 +33,15 @@ The image fixes the rest: port 8080, data in `/var/lib/headroom/data`, keys in `
 2. In Environment, set `TS_AUTHKEY`, `HEADROOM_PUBLIC_URL` and any optional values.
 3. Do not add a domain in Dokploy. Tailscale serves the app.
 4. Deploy, then open the address from a device on your tailnet.
+
+## Deploy with Coolify
+
+1. Create an application from this repository with the Docker Compose build pack. Set the base directory to `/deploy` and the compose location to `/compose.yaml`.
+2. In Environment, set `TS_AUTHKEY`, `HEADROOM_PUBLIC_URL` and any optional values.
+3. Do not add a domain in Coolify. Tailscale serves the app.
+4. Deploy, then open the address from a device on your tailnet.
+
+Coolify writes only the compose file to the host, so a bind mount of a repository file would be an empty directory. The Tailscale service is built from `deploy/ts/Dockerfile` for that reason: `serve.json` ships inside the image. After you edit `serve.json`, redeploy so the image is rebuilt.
 
 ## Deploy with Docker Compose
 
@@ -92,5 +101,6 @@ Migrations run at start. Back up first when a release notes a migration.
 - `docker compose exec tailscale tailscale status` lists the node; `tailscale serve status` shows the proxy to `http://headroom-app:8080`.
 - From a device outside the tailnet, the address must not load.
 - Sign-in fails or passkeys refuse: `HEADROOM_PUBLIC_URL` does not match the address in the browser.
+- Logs full of `could not connect to local backend server at 127.0.0.1:443` mean no Serve config loaded: `tailscale serve status` shows nothing. Rebuild the Tailscale image (`docker compose up -d --build`) and check that `/config/serve.json` exists in the container.
 - "502" from Serve: the app is not healthy yet, or the name or port in `ts/serve.json` changed. Keep the node name in `TS_HOSTNAME`, never as the tailscale container's `hostname:`: a container resolves its own hostname to itself.
 - The node has a new name with `-1` after a restart: the `ts-state` volume was lost, so Tailscale made a new node. Remove the old one in the admin console.
