@@ -7,6 +7,7 @@ import avatarUrl from "./assets/avatar.svg";
 import { avatarSrc } from "./lib/avatar.ts";
 import claudeUrl from "./assets/claude.svg";
 import codexRaw from "./assets/codex.svg?raw";
+import commandcodeRaw from "./assets/commandcode.svg?raw";
 import copilotRaw from "./assets/copilot.svg?raw";
 import cursorRaw from "./assets/cursor.svg?raw";
 import grokRaw from "./assets/grok.svg?raw";
@@ -189,6 +190,7 @@ const marks: Record<Provider, Mark> = {
   grok: { kind: "inline", svg: inlineSvg(grokRaw, true) },
   antigravity: { kind: "image", url: antigravityUrl },
   vercel_ai_gateway: { kind: "inline", svg: inlineSvg(vercelRaw, true) },
+  commandcode: { kind: "inline", svg: inlineSvg(commandcodeRaw, true) },
 };
 
 /** Provider brand mark: 20 px by default, 16 px or 24 px with size. Decorative; name the provider in text. */

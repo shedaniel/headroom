@@ -1,6 +1,6 @@
 # Provider findings
 
-Research baseline: 2026-10-01. All seven connectors are implemented; each dossier records which findings are validated against a live account and which are not. The matrix is a map of the evidence, not a support promise. Connection methods follow [ADR 0001](../decisions/0001-direct-provider-clients.md): an official CLI may run once for sign-in, collection is always direct HTTP.
+Research baseline: 2026-10-01. All eight connectors are implemented; each dossier records which findings are validated against a live account and which are not. The matrix is a map of the evidence, not a support promise. Connection methods follow [ADR 0001](../decisions/0001-direct-provider-clients.md): an official CLI may run once for sign-in, collection is always direct HTTP.
 
 ## Connection matrix
 
@@ -12,6 +12,7 @@ Research baseline: 2026-10-01. All seven connectors are implemented; each dossie
 | [Copilot](copilot.md) | GitHub device code with a public CLI client id, or import a gh token | `copilot_internal/user` (private); org billing REST (official) | AI-credits model since June 2026; org seats return no per-seat percent |
 | [Vercel AI Gateway](vercel-ai-gateway.md) | Gateway API key | `@ai-sdk/gateway` `getCredits` and `getSpendReport` (official) | Team selection; spend report is Pro and Enterprise only |
 | [Grok](grok.md) | `grok login --device-auth` via the runner, or import `auth.json`; management API key | `cli-chat-proxy.grok.com/v1/billing` (private); prepaid balance (official) | Team logins answer 412; unified weekly billing only |
+| [Command Code](commandcode.md) | Command Code API key | `/alpha/whoami`, `/alpha/billing/credits`, `/alpha/billing/subscriptions` and `/alpha/usage/summary` (private) | Routes are undocumented; window and credit units unconfirmed |
 | [Antigravity](antigravity.md) | Direct Google OAuth plus pasted redirect | `retrieveUserQuotaSummary` (private) | `agy` needs a Linux keyring; credits unknown |
 
 ## Reading a dossier

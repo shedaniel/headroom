@@ -38,6 +38,7 @@ Do not conduct live account checks until the account owner authorizes them. Agen
 | Claude | Enable flag, CLI login with pasted code, `api/oauth/usage` buckets and reset grants, refresh, no model request, `setup-token` rejected |
 | Cursor | Approval polling and refresh, usage summary pools and cycle, member versus admin scope, admin pagination and range limit |
 | Copilot | Device flow with a public CLI client id, `copilot_internal/user` with the documented headers, AI-credits percent and reset, org-managed seat handling, org billing REST for owners only |
+| Command Code | Key with provider API access, `whoami` identity, the 5-hour and weekly windows, credit pools, plan and billing period, an organization key, a key without API access |
 | Vercel | Gateway key scope, pinned `@ai-sdk/gateway` version, balance and total used, team selection, spend report plan gate |
 | Grok | CLI device login, refresh at `auth.x.ai`, weekly pool and cap from the billing route, 412 on team logins handled as `partial`, management API balance as a separate connection |
 | Antigravity | Google OAuth with pasted redirect, project id, `retrieveUserQuotaSummary` buckets and resets, refresh, credits stay unknown |

@@ -13,6 +13,7 @@ COPY packages/core/package.json packages/core/package.json
 COPY packages/view-model/package.json packages/view-model/package.json
 COPY packages/connectors/antigravity/package.json packages/connectors/antigravity/package.json
 COPY packages/connectors/claude/package.json packages/connectors/claude/package.json
+COPY packages/connectors/commandcode/package.json packages/connectors/commandcode/package.json
 COPY packages/connectors/codex/package.json packages/connectors/codex/package.json
 COPY packages/connectors/copilot/package.json packages/connectors/copilot/package.json
 COPY packages/connectors/cursor/package.json packages/connectors/cursor/package.json

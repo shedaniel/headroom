@@ -1,0 +1,7 @@
+{
+  "credits": { "monthlyCredits": "plenty" },
+  "windowLimits": {
+    "fiveHour": { "used": "many", "cap": 14 },
+    "weekly": { "used": 17.5, "cap": 35, "resetAt": 1790500000000 }
+  }
+}

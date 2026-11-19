@@ -19,7 +19,7 @@ Files: [`deploy/compose.yaml`](../../deploy/compose.yaml), [`deploy/ts/Dockerfil
 | `TS_EXTRA_ARGS` | No | Extra `tailscale up` flags, for example `--advertise-tags=tag:server`. |
 | `HEADROOM_PUBLIC_URL` | Yes | Exactly `https://<TS_HOSTNAME>.<tailnet>.ts.net`, no trailing slash. Passkeys, secure cookies, origin checks and the "Open Headroom" link in notifications use it. Find the tailnet name on the admin console DNS page. |
 | `HEADROOM_TRUSTED_ORIGINS` | No | Sites allowed to embed Headroom in a frame, as comma separated origins, for example `https://homebase.<tailnet>.ts.net`. Without it, only Headroom itself may frame it. |
-| `HEADROOM_ENABLED_PROVIDERS` | No, default all seven | Comma list of `codex`, `claude`, `grok`, `antigravity`, `copilot`, `cursor`, `vercel_ai_gateway`. |
+| `HEADROOM_ENABLED_PROVIDERS` | No, default all eight | Comma list of `codex`, `claude`, `grok`, `antigravity`, `copilot`, `cursor`, `vercel_ai_gateway`, `commandcode`. |
 | `HEADROOM_LOG_LEVEL` | No, default `info` | `debug`, `info`, `warn` or `error`. |
 | `HEADROOM_REFRESH_INTERVAL_SECONDS` | No, default `900` | The first value of the Refresh Every setting. The setting wins after that. |
 | `HEADROOM_STALE_AFTER_SECONDS` | No, default `43200` | When an account shows as stale. |

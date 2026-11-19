@@ -28,6 +28,7 @@ const cardOrder: readonly Provider[] = [
   "grok",
   "antigravity",
   "vercel_ai_gateway",
+  "commandcode",
 ];
 
 function orderOf(provider: Provider): number {

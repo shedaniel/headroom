@@ -769,6 +769,40 @@ function vercelParts(draw: Draw, shape: "pro" | "free"): Parts {
   };
 }
 
+// ---------- Command Code ----------
+
+function commandcodeParts(draw: Draw): Parts {
+  const five = usedWindow(draw, "five_hour", sessionWindow, 4, healthyMax, 1);
+  const weekly = usedWindow(draw, "weekly", weeklyWindow, 12, healthyMax, 1);
+  // The billing period ends some days ahead and opened thirty days before that.
+  const renews = ahead(draw, "usage.period:end", 6 * day, 24 * day);
+  const left = streamFor(draw, "credits.balance").between(4, 18);
+  const spent = streamFor(draw, "usage.period").between(8, 42);
+  return {
+    plan: "Individual Pro",
+    metrics: [
+      five,
+      weekly,
+      metricOf({
+        key: "credits.balance",
+        kind: "credits",
+        scope: "account",
+        unit: "credits",
+        text: money(left),
+      }),
+      metricOf({
+        key: "usage.period",
+        kind: "spend",
+        scope: "billing_cycle",
+        unit: "credits",
+        text: money(spent),
+        windowStart: renews - 30 * day,
+        windowEnd: renews,
+      }),
+    ],
+  };
+}
+
 // ---------- detected events and automation ----------
 
 type Automation = OverviewConnection["automation"];
@@ -1058,6 +1092,15 @@ const accounts: readonly Account[] = [
     parts: (draw) => vercelParts(draw, "free"),
     // The spend report is out of reach on this plan, which the connector reports as a partial reading.
     state: "partial",
+  },
+  {
+    provider: "commandcode",
+    n: 1,
+    name: null,
+    identity: (owner) => owner.main,
+    authMethod: "api_key",
+    interface: "private",
+    parts: (draw) => commandcodeParts(draw),
   },
 ];
 

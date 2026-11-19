@@ -23,6 +23,7 @@
         "@headroom/connector-antigravity": "workspace:*",
         "@headroom/connector-claude": "workspace:*",
         "@headroom/connector-codex": "workspace:*",
+        "@headroom/connector-commandcode": "workspace:*",
         "@headroom/connector-copilot": "workspace:*",
         "@headroom/connector-cursor": "workspace:*",
         "@headroom/connector-grok": "workspace:*",
@@ -73,6 +74,14 @@
     },
     "packages/connectors/codex": {
       "name": "@headroom/connector-codex",
+      "version": "0.1.0",
+      "dependencies": {
+        "@headroom/core": "workspace:*",
+        "zod": "4.6.7",
+      },
+    },
+    "packages/connectors/commandcode": {
+      "name": "@headroom/connector-commandcode",
       "version": "0.1.0",
       "dependencies": {
         "@headroom/core": "workspace:*",
@@ -235,6 +244,8 @@
     "@headroom/connector-claude": ["@headroom/connector-claude@workspace:packages/connectors/claude"],
 
     "@headroom/connector-codex": ["@headroom/connector-codex@workspace:packages/connectors/codex"],
+
+    "@headroom/connector-commandcode": ["@headroom/connector-commandcode@workspace:packages/connectors/commandcode"],
 
     "@headroom/connector-copilot": ["@headroom/connector-copilot@workspace:packages/connectors/copilot"],
 

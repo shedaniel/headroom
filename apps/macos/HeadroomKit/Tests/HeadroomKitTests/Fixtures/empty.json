@@ -12,12 +12,17 @@
     "antigravity",
     "copilot",
     "cursor",
-    "vercel_ai_gateway"
+    "vercel_ai_gateway",
+    "commandcode"
   ],
   "accounts": [],
   "summary": {
     "monthlyPlanTotal": null,
     "extraSpend": [
+      {
+        "unit": "credits",
+        "value": 28.7
+      },
       {
         "unit": "grok_credits",
         "value": 48

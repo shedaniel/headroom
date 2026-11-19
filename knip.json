@@ -30,6 +30,10 @@
       "entry": ["src/**/*.test.ts"],
       "project": ["src/**/*.ts"]
     },
+    "packages/connectors/commandcode": {
+      "entry": ["src/**/*.test.ts"],
+      "project": ["src/**/*.ts"]
+    },
     "packages/connectors/grok": {
       "entry": ["src/**/*.test.ts"],
       "project": ["src/**/*.ts"]

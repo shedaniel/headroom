@@ -12,7 +12,8 @@
     "antigravity",
     "copilot",
     "cursor",
-    "vercel_ai_gateway"
+    "vercel_ai_gateway",
+    "commandcode"
   ],
   "accounts": [
     {
@@ -902,11 +903,84 @@
         }
       ],
       "banked": null
+    },
+    {
+      "id": "demo-commandcode-1",
+      "provider": "commandcode",
+      "name": "Account 14",
+      "plan": "Individual Pro",
+      "identity": "account-14@example.invalid",
+      "state": "ready",
+      "reconnectReason": null,
+      "interface": "private",
+      "lastSuccessAt": 1793285411561,
+      "observedAt": 1793285411127,
+      "limits": [
+        {
+          "key": "five_hour",
+          "label": "Session",
+          "window": "5 hours",
+          "windowKind": "session",
+          "percentLeft": 76.8,
+          "unlimited": false,
+          "notStarted": false,
+          "resetsAt": 1793288165724,
+          "resetWords": "resets",
+          "runsOutAt": null,
+          "part": false,
+          "interface": "private"
+        },
+        {
+          "key": "weekly",
+          "label": "Weekly",
+          "window": "7 days",
+          "windowKind": "weekly",
+          "percentLeft": 63.3,
+          "unlimited": false,
+          "notStarted": false,
+          "resetsAt": 1793618079071,
+          "resetWords": "resets",
+          "runsOutAt": null,
+          "part": false,
+          "interface": "private"
+        }
+      ],
+      "charges": [
+        {
+          "key": "credits.balance",
+          "label": "Credits Left",
+          "kind": "count",
+          "value": 9.23,
+          "unit": "credits",
+          "cap": null,
+          "window": null,
+          "unlimited": false,
+          "availability": "available",
+          "interface": "private"
+        },
+        {
+          "key": "usage.period",
+          "label": "Used This Period",
+          "kind": "spend",
+          "value": 28.7,
+          "unit": "credits",
+          "cap": null,
+          "window": null,
+          "unlimited": false,
+          "availability": "available",
+          "interface": "private"
+        }
+      ],
+      "banked": null
     }
   ],
   "summary": {
     "monthlyPlanTotal": null,
     "extraSpend": [
+      {
+        "unit": "credits",
+        "value": 28.7
+      },
       {
         "unit": "grok_credits",
         "value": 48

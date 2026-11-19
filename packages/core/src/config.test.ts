@@ -24,6 +24,7 @@ test("defaults on macOS live under Application Support", () => {
       "copilot",
       "cursor",
       "vercel_ai_gateway",
+      "commandcode",
     ],
     refreshIntervalSeconds: 900,
     staleAfterSeconds: 43_200,

@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "id": "sub-0001",
+    "status": "active",
+    "planId": "individual-sample",
+    "cancelAtPeriodEnd": false,
+    "currentPeriodStart": "2026-10-01T00:00:00.000Z",
+    "currentPeriodEnd": "2026-11-01T00:00:00.000Z"
+  }
+}

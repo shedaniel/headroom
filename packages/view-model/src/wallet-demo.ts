@@ -112,6 +112,8 @@ export function demoWallet(
   // Vercel AI Gateway bills by credits, not by subscription.
   set("vercel_ai_gateway:1", () => ({ kind: "free" }));
   set("vercel_ai_gateway:2", () => ({ kind: "free" }));
+  // A synthetic monthly price: Command Code reports no price of its own.
+  set("commandcode:1", (connection) => paid(connection, usd(30), "monthly"));
 
   const topUpOn = (key: string, connectionKey: string, over: Partial<TopUp>): TopUp[] => {
     const connection = byPosition.get(connectionKey);

@@ -45,6 +45,13 @@ const PORTED: Ported[] = [
     used: "The Cursor sign-in flow: PKCE, the login URL, polling and refresh (`packages/connectors/cursor/src/index.ts`).",
   },
   {
+    name: "pi-commandcode-provider",
+    url: "https://github.com/patlux/pi-commandcode-provider",
+    license: "MIT",
+    file: "pi-commandcode-provider.txt",
+    used: "The Command Code quota routes, their query parameters and response shapes (`packages/connectors/commandcode/src/endpoints.ts`, `schemas.ts`).",
+  },
+  {
     name: "Arc",
     url: "https://github.com/kuratlielia/arc-library",
     license: "MIT",

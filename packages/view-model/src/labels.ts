@@ -11,6 +11,7 @@ const defaultOrder: readonly Provider[] = [
   "antigravity",
   "copilot",
   "vercel_ai_gateway",
+  "commandcode",
 ];
 
 const providerNames: Record<Provider, string> = {
@@ -21,6 +22,7 @@ const providerNames: Record<Provider, string> = {
   antigravity: "Antigravity",
   copilot: "Copilot",
   vercel_ai_gateway: "Vercel AI Gateway",
+  commandcode: "Command Code",
 };
 
 export function providerName(provider: Provider): string {

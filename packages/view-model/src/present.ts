@@ -623,6 +623,20 @@ function copilot(context: Context): Built {
   return { meters, others: [], facts };
 }
 
+function commandcode(context: Context): Built {
+  const meters = [
+    ...meterFor(context, "five_hour", { label: "Session", window: "5 hours" }),
+    ...meterFor(context, "weekly", { label: "Weekly", window: "7 days", short: "Weekly" }),
+  ];
+  const facts = [
+    ...factFor(context, "credits.balance", "Credits Left", (n) => formatNumber(n, 2)),
+    ...factFor(context, "usage.period", "Used This Period", (n) => formatNumber(n, 2)),
+  ];
+  const renews = take(context, "billing.renews_at")?.resetsAt ?? null;
+  if (renews !== null) facts.push(factOf("billing.renews_at", "Renews", shortDate(renews)));
+  return { meters, others: [], facts };
+}
+
 function vercel(context: Context): Built {
   const others: Cell[] = [];
   const balance = take(context, "credits.balance");
@@ -695,6 +709,7 @@ const builders: Record<OverviewConnection["provider"], (context: Context) => Bui
   antigravity,
   copilot,
   vercel_ai_gateway: vercel,
+  commandcode,
 };
 
 /** The meter that stands for the account. These are the totals; other meters are parts of them. */
@@ -702,6 +717,7 @@ const primaryKeys: Partial<Record<OverviewConnection["provider"], string>> = {
   claude: "seven_day",
   cursor: "included.total_percent",
   grok: "weekly_pool.used_percent",
+  commandcode: "weekly",
 };
 
 /** Stands in for the primary meter when it is unknown: a Cursor team seat on a shared pool has no included total. */

@@ -18,6 +18,7 @@ const fallbackLabels: Readonly<Record<Provider, string>> = {
   copilot: "Copilot",
   cursor: "Cursor",
   vercel_ai_gateway: "Vercel AI Gateway",
+  commandcode: "Command Code",
 };
 
 export interface SplitLabel {

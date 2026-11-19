@@ -33,6 +33,7 @@ const providerMethods = {
   copilot: { interface: "official", methods: ["device_code"] },
   cursor: { interface: "private", methods: ["import"] },
   vercel_ai_gateway: { interface: "official", methods: ["api_key"] },
+  commandcode: { interface: "private", methods: ["api_key"] },
 } as const;
 
 let settings: Settings = defaultSettings;

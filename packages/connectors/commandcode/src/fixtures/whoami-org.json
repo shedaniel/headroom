@@ -1,0 +1,5 @@
+{
+  "success": true,
+  "user": { "id": "user-0002", "userName": "sample-member" },
+  "org": { "id": "org-0001", "login": "sample-org" }
+}

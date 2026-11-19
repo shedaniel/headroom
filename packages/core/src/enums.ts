@@ -171,6 +171,7 @@ export const providers = [
   "copilot",
   "cursor",
   "vercel_ai_gateway",
+  "commandcode",
 ] as const;
 export const providerSchema = z.enum(providers);
 export type Provider = z.infer<typeof providerSchema>;

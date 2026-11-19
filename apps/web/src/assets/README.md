@@ -5,6 +5,8 @@ service inside a personal dashboard. Each mark belongs to its owner; check the o
 guidelines before any public distribution. Monochrome marks (Codex, Cursor, Copilot, Grok, Vercel)
 are recoloured to `currentColor`; Claude and Antigravity keep their brand colours.
 
+`commandcode.svg` is Command Code's own mark, the pinned-tab icon from `https://commandcode.ai/favicon/2024/safari-pinned-tab.svg` (fetched 2026-11-19), with the XML prolog and metadata removed and the path data unchanged. It is recoloured to `currentColor`. The mark belongs to Command Code; check its brand guidelines before any public distribution.
+
 `telegram.svg` is the Telegram mark from SVGL (fetched 2026-10-03) and keeps its brand colours. It marks the Telegram destination on the Channels tab.
 
 `avatar.svg` is a DiceBear "Voxel Art" identicon (CC0 1.0), generated from the seed `headroom` on
