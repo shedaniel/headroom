@@ -47,7 +47,7 @@ const credential = { secret: { apiKey: "user_synthetic_key" }, expiresAt: null }
 const stored: Identity = {
   providerAccountId: "user:user-0001",
   workspaceId: null,
-  label: "sample-user",
+  label: "sample@example.test",
   assurance: "strong",
 };
 
@@ -95,9 +95,17 @@ describe("Command Code connector", () => {
     expect(http.calls[0]?.url.href).not.toContain("user_synthetic_key");
   });
 
+  test("identity falls back to the username when the account has no email", async () => {
+    const noEmail = { ...whoamiUser, user: { ...whoamiUser.user, email: "  " } };
+    const http = fakeFetch(healthy({ [whoamiPath]: () => json(noEmail) }));
+    const id = await createCommandCodeConnector({ fetch: http.fetch }).identity(credential);
+    expect(id).toMatchObject({ providerAccountId: "user:user-0001", label: "sample-user" });
+  });
+
   test("identity names an organization key by its organization", async () => {
     const http = fakeFetch(healthy({ [whoamiPath]: () => json(whoamiOrg) }));
     const id = await createCommandCodeConnector({ fetch: http.fetch }).identity(credential);
+    // The organization, not the member's own email.
     expect(id).toMatchObject({ providerAccountId: "org:org-0001", label: "sample-org" });
   });
 
@@ -121,7 +129,7 @@ describe("Command Code connector", () => {
     const connector = createCommandCodeConnector({ fetch: http.fetch });
     const result = await connector.collect(credential, stored);
     expect(result.failures).toEqual([]);
-    expect(result.label).toBe("sample-user (Individual Sample)");
+    expect(result.label).toBe("sample@example.test (Sample)");
 
     expect(byKey(result.metrics, "five_hour")).toMatchObject({
       kind: "quota_percentage",
@@ -149,6 +157,15 @@ describe("Command Code connector", () => {
       valueText: "41.25",
       windowStart: Date.parse("2026-10-01T00:00:00.000Z"),
       windowEnd: Date.parse("2026-11-01T00:00:00.000Z"),
+    });
+    // 37.5 used of the monthly pool, 12.5 left: a pool of 50.
+    expect(byKey(result.metrics, "monthly")).toMatchObject({
+      kind: "quota_percentage",
+      scope: "billing_cycle",
+      valueText: "75",
+      unit: "percent",
+      resetsAt: Date.parse("2026-11-01T00:00:00.000Z"),
+      availability: "available",
     });
     expect(byKey(result.metrics, "billing.renews_at")).toMatchObject({
       kind: "reset_timestamp",
@@ -270,7 +287,7 @@ describe("Command Code connector", () => {
     );
     expect(result.failures).toEqual([]);
     expect(byKey(result.metrics, "billing.renews_at")).toBeUndefined();
-    expect(result.label).toBe("sample-user");
+    expect(result.label).toBe("sample@example.test");
     // Without a period start the usage total is the route's own period, with no `since`.
     expect(byKey(result.metrics, "usage.period")).toMatchObject({ valueText: "41.25" });
   });
@@ -288,5 +305,45 @@ describe("Command Code connector", () => {
     expect(result.failures).toMatchObject([{ category: "provider_unavailable" }]);
     expect(JSON.stringify(result)).not.toContain("user_synthetic_key");
     expect(JSON.stringify(result)).not.toContain("secret body");
+  });
+
+  test("the monthly pool is left out when the summary does not say what it used, and unknown when a route failed", async () => {
+    const { totalMonthlyCredits: _omitted, ...bare } = summary;
+    const noMonthly = fakeFetch(healthy({ [usageSummaryPath]: () => json(bare) }));
+    const quiet = await createCommandCodeConnector({ fetch: noMonthly.fetch }).collect(
+      credential,
+      stored,
+    );
+    expect(quiet.failures).toEqual([]);
+    expect(byKey(quiet.metrics, "monthly")).toBeUndefined();
+
+    const down = fakeFetch(
+      healthy({ [usageSummaryPath]: () => new Response("x", { status: 503 }) }),
+    );
+    const failed = await createCommandCodeConnector({ fetch: down.fetch }).collect(
+      credential,
+      stored,
+    );
+    expect(byKey(failed.metrics, "monthly")).toMatchObject({
+      valueText: null,
+      availability: "temporarily_unavailable",
+    });
+  });
+
+  test.each([
+    ["individual-goat", "Goat"],
+    ["individual-go", "Go"],
+    ["team-max", "Max"],
+    ["max", "Max"],
+    ["studio-pro", "Studio Pro"],
+    ["individual", "Individual"],
+  ])("the plan %s is shown as %s", async (planId, shown) => {
+    const body = { success: true, data: { ...subscription.data, planId } };
+    const http = fakeFetch(healthy({ [subscriptionsPath]: () => json(body) }));
+    const result = await createCommandCodeConnector({ fetch: http.fetch }).collect(
+      credential,
+      stored,
+    );
+    expect(result.label).toBe(`sample@example.test (${shown})`);
   });
 });

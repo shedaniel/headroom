@@ -627,6 +627,11 @@ function commandcode(context: Context): Built {
   const meters = [
     ...meterFor(context, "five_hour", { label: "Session", window: "5 hours" }),
     ...meterFor(context, "weekly", { label: "Weekly", window: "7 days", short: "Weekly" }),
+    ...meterFor(context, "monthly", {
+      label: "Monthly",
+      window: "billing period",
+      short: "Monthly",
+    }),
   ];
   const facts = [
     ...factFor(context, "credits.balance", "Credits Left", (n) => formatNumber(n, 2)),

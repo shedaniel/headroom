@@ -776,6 +776,14 @@ function commandcodeParts(draw: Draw): Parts {
   const weekly = usedWindow(draw, "weekly", weeklyWindow, 12, healthyMax, 1);
   // The billing period ends some days ahead and opened thirty days before that.
   const renews = ahead(draw, "usage.period:end", 6 * day, 24 * day);
+  const monthly = usedWindow(
+    draw,
+    "monthly",
+    { scope: "billing_cycle", min: 6 * day, max: 24 * day },
+    20,
+    healthyMax,
+    1,
+  );
   const left = streamFor(draw, "credits.balance").between(4, 18);
   const spent = streamFor(draw, "usage.period").between(8, 42);
   return {
@@ -783,6 +791,7 @@ function commandcodeParts(draw: Draw): Parts {
     metrics: [
       five,
       weekly,
+      monthly,
       metricOf({
         key: "credits.balance",
         kind: "credits",

@@ -943,6 +943,20 @@
           "runsOutAt": null,
           "part": false,
           "interface": "private"
+        },
+        {
+          "key": "monthly",
+          "label": "Monthly",
+          "window": "billing period",
+          "windowKind": "cycle",
+          "percentLeft": 37.3,
+          "unlimited": false,
+          "notStarted": false,
+          "resetsAt": 1794409809084,
+          "resetWords": "resets",
+          "runsOutAt": null,
+          "part": false,
+          "interface": "private"
         }
       ],
       "charges": [

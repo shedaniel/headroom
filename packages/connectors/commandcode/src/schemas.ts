@@ -6,6 +6,7 @@ export const whoamiSchema = z
     user: z
       .object({
         id: z.string().min(1),
+        email: z.string().optional(),
         userName: z.string().optional(),
         name: z.string().optional(),
       })
@@ -68,6 +69,8 @@ export const usageSummarySchema = z
   .object({
     totalCost: z.number().min(0),
     totalCount: z.number().min(0).optional(),
+    /** What this period has used of the monthly pool alone, apart from purchased and free credits. */
+    totalMonthlyCredits: z.number().min(0).optional(),
     periodStart: z.string().nullish(),
   })
   .loose();

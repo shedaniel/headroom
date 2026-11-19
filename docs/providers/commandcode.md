@@ -22,6 +22,7 @@ An organization key carries an organization. The billing and usage routes take i
 | `GET /alpha/billing/subscriptions` returns `data.planId`, `status`, `currentPeriodStart` and `currentPeriodEnd` | prior observation | Same call; confirmed against [S1] |
 | `GET /alpha/usage/summary` returns `totalCost` and `periodStart`, and takes `since` | prior observation | Same call; confirmed against [S1] |
 | Every route takes `Authorization: Bearer <key>` and an optional `orgId` query parameter | source-inspected | [S1] |
+| The monthly pool's size is `totalMonthlyCredits + monthlyCredits` | unvalidated | Observed on one account where the sum came to a round figure; no source states it, and a mid-period top-up of the pool would break it |
 | The window `used` and `cap` share a unit, so `used / cap` is the fraction of the limit | unvalidated | No documentation states the unit; the ratio is the only use |
 | One credit equals one US dollar | unvalidated | Not documented, so credits are never shown as money |
 | `totalCost` is in the same unit as the credits | unvalidated | The summary also reports `totalCredits` with the same value |
@@ -35,11 +36,12 @@ An organization key carries an organization. The billing and usage routes take i
 | --- | --- | --- | --- |
 | Session (5 hours) | Yes | `windowLimits.fiveHour`: `used / cap` as a percentage, `resetAt` as the reset | `private`. Key `five_hour`, scope `window:18000s`. Left out when `cap` is 0. |
 | Weekly | Yes | `windowLimits.weekly`: `used / cap`, `resetAt` | `private`. Key `weekly`, scope `window:604800s`. The primary meter. |
+| Monthly | Derived | `usage/summary.totalMonthlyCredits` as used, `credits.monthlyCredits` as left: used / (used + left) | `private`. Key `monthly`, scope `billing_cycle`, resets at the period end. The API never states the pool's size, so this is an inference. Left out when the summary omits `totalMonthlyCredits`. |
 | Credits left | Yes | `credits.monthlyCredits + purchasedCredits + freeCredits` | `private`. Key `credits.balance`, unit `credits`. Unknown, not a smaller sum, when any pool is missing. |
 | Used this period | Yes | `usage/summary.totalCost`, for the billing period | `private`. Key `usage.period`, kind `spend`, unit `credits`. |
 | Renewal | Yes | `subscriptions.data.currentPeriodEnd` | `private`. Key `billing.renews_at`. Absent when there is no subscription. |
-| Plan | Yes | `subscriptions.data.planId`, shown as words (`individual-pro` is "Individual Pro") | The connection label is `<login> (<Plan>)`. |
-| Monthly allowance | `unknown` | No verified mapping | Do not label the balance as an allowance. |
+| Plan | Yes | `subscriptions.data.planId`, shown as its tier (`individual-goat` is "Goat", `individual-go` is "Go") | The connection label is `<account> (<Tier>)`. An audience prefix such as `individual` or `team` is dropped; an unknown prefix stays in the name. The account is the email for a personal key (the username when there is none) and the organization name for an organization key. |
+| Monthly allowance (absolute) | `unknown` | The API never states the pool's size | Only the derived Monthly percentage above is shown. Do not label the balance as an allowance. |
 | Banked resets | `unknown` | No contract | Not an action target. |
 | Sandbox minutes | Returned | `sandboxMinutes` in the credits response | Not collected. |
 

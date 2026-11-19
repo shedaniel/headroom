@@ -43,7 +43,7 @@ import {
   type Whoami,
 } from "./schemas.ts";
 
-export const commandcodeConnectorVersion = "0.1.0";
+export const commandcodeConnectorVersion = "0.1.1";
 
 export interface CommandCodeConnectorOptions {
   readonly fetch?: FetchLike;
@@ -130,6 +130,12 @@ export function createCommandCodeConnector(options: CommandCodeConnectorOptions 
       return Promise.resolve([
         { metricOrAction: "five_hour", availability: "available", ...seen },
         { metricOrAction: "weekly", availability: "available", ...seen },
+        {
+          metricOrAction: "monthly",
+          availability: "available",
+          ...seen,
+          evidenceLevel: "unvalidated" as const,
+        },
         { metricOrAction: "credits.balance", availability: "available", ...seen },
         { metricOrAction: "usage.period", availability: "available", ...seen },
         { metricOrAction: "billing.renews_at", availability: "available", ...seen },
@@ -183,6 +189,7 @@ export function createCommandCodeConnector(options: CommandCodeConnectorOptions 
 
       const metrics = [
         ...creditMetrics(credits),
+        ...monthlyMetrics(credits, summary, subscription),
         ...subscriptionMetrics(subscription),
         ...summaryMetrics(summary, subscription),
       ];
@@ -227,10 +234,15 @@ function ownerOf(who: Whoami): { accountId: string; orgId: string | null; login:
     return {
       accountId: `user:${who.user.id}`,
       orgId: null,
-      login: who.user.userName ?? who.user.name ?? "Command Code",
+      // The email tells accounts apart best; the username and name are the fallbacks.
+      login: nonEmpty(who.user.email) ?? who.user.userName ?? who.user.name ?? "Command Code",
     };
   }
   return null;
+}
+
+function nonEmpty(value: string | undefined): string | undefined {
+  return value === undefined || value.trim() === "" ? undefined : value.trim();
 }
 
 /** Why a section is missing. A refused key never gets here; an outage is temporary; a changed shape is unknown. */
@@ -245,6 +257,11 @@ function unknownMetric(
   fields: Pick<MetricObservation, "providerMetricKey" | "kind" | "scope" | "unit">,
 ): MetricObservation {
   return { ...fields, valueText: null, availability: absence(failure), interface: "private" };
+}
+
+/** Four decimals: enough for a meter, and free of float noise such as 99.81481058400001. */
+function percentOf(used: number, cap: number): string {
+  return String(Math.round((used / cap) * 1_000_000) / 10_000);
 }
 
 /** The window's `resetAt` is epoch milliseconds, or 0 while the window has not started. */
@@ -265,8 +282,7 @@ function windowMetric(
     providerMetricKey: key,
     kind: "quota_percentage",
     scope: `window:${seconds}s`,
-    // Four decimals: enough for a meter, and free of float noise such as 99.81481058400001.
-    valueText: String(Math.round((limit.used / limit.cap) * 1_000_000) / 10_000),
+    valueText: percentOf(limit.used, limit.cap),
     unit: "percent",
     resetsAt: resetOf(limit.resetAt),
     availability: "available",
@@ -318,6 +334,44 @@ function creditMetrics(section: Section<CreditsResponse>): MetricObservation[] {
     interface: "private",
   });
   return metrics;
+}
+
+/**
+ * The monthly pool as a percentage. The API reports what is left of the pool and what the period has used of it,
+ * never the pool's size, so the size is their sum. That is an inference, not a documented figure.
+ */
+function monthlyMetrics(
+  credits: Section<CreditsResponse>,
+  summary: Section<UsageSummary>,
+  subscription: Section<SubscriptionResponse>,
+): MetricObservation[] {
+  const base = {
+    providerMetricKey: "monthly",
+    kind: "quota_percentage",
+    scope: "billing_cycle",
+    unit: "percent",
+    interface: "private",
+  } as const;
+  const failure = !credits.ok ? credits.failure : !summary.ok ? summary.failure : null;
+  if (failure !== null) {
+    return [{ ...base, valueText: null, availability: absence(failure) }];
+  }
+  if (!credits.ok || !summary.ok) return [];
+  const left = credits.value.credits?.monthlyCredits;
+  const used = summary.value.totalMonthlyCredits;
+  // A route that leaves either figure out has no monthly pool to show; a pool of nothing has no percentage.
+  if (left === undefined || used === undefined || used + left <= 0) return [];
+  const period = subscription.ok ? subscription.value.data : null;
+  return [
+    {
+      ...base,
+      valueText: percentOf(used, used + left),
+      windowStart: parseDate(period?.currentPeriodStart),
+      windowEnd: parseDate(period?.currentPeriodEnd),
+      resetsAt: parseDate(period?.currentPeriodEnd),
+      availability: "available",
+    },
+  ];
 }
 
 function subscriptionMetrics(section: Section<SubscriptionResponse>): MetricObservation[] {
@@ -379,13 +433,19 @@ function summaryMetrics(
   ];
 }
 
-/** `individual-pro` reads as "Individual Pro". An unnamed plan is no plan, not a guess. */
+/** Who a plan is for. The ids read `<audience>-<tier>`, and the tier is what an owner wants to see. */
+const audiences = new Set(["individual", "personal", "team", "teams", "org", "organization"]);
+
+/**
+ * `individual-goat` reads as "Goat". An id with no audience prefix is the tier itself, and a prefix this list does
+ * not know stays in the name rather than being guessed away. An unnamed plan is no plan.
+ */
 function planName(subscription: SubscriptionResponse): string | null {
   const id = subscription.data?.planId;
-  if (id === undefined || id === null || id.trim() === "") return null;
-  return id
-    .split(/[-_\s]+/)
-    .filter((word) => word !== "")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  if (id === undefined || id === null) return null;
+  const words = id.split(/[-_\s]+/).filter((word) => word !== "");
+  if (words.length === 0) return null;
+  const first = words[0]?.toLowerCase() ?? "";
+  const tier = words.length > 1 && audiences.has(first) ? words.slice(1) : words;
+  return tier.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 }
